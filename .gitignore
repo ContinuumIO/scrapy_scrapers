@@ -2,7 +2,7 @@
 resources/
 test_resources/
 source/memex/settings.py
-src/run_scraper.py
+run_scraper.py
 notes.md
 
 # Byte-compiled / optimized / DLL files
