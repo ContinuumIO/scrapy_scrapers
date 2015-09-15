@@ -1,17 +1,19 @@
+import sys
+
 import scrapy
 from scrapy.crawler import CrawlerProcess
 from scrapy.utils.project import get_project_settings
 
 
-process = CrawlerProcess(get_project_settings())
+if __name__ == "__main__":
+    allowed_domains = [sys.argv[1]]
+    start_urls = [x for x in sys.argv[2:]]
 
+
+process = CrawlerProcess(get_project_settings())
 process.crawl(
     "base",
-    allowed_domains=[
-        "marketwired.com",
-    ],
-    start_urls=[
-        "http://www.marketwired.com/news_room/",
-    ],
+    allowed_domains = allowed_domains,
+    start_urls = start_urls,
 )
 process.start()
