@@ -1,6 +1,6 @@
 import scrapy
 
-from items import LinkItem
+from items import LinkItem, BodyItem
 
 
 class BaseScraper(scrapy.Spider):
@@ -17,8 +17,6 @@ class BaseScraper(scrapy.Spider):
             yield scrapy.Request(url, callback=self.parse_as_item)
 
     def parse_as_item(self, response):
-        for selector in response.xpath("//a"):
-            item = LinkItem()
-            item["link"] = selector.xpath("@href").extract()
-            item["text"] = selector.xpath("text()").extract()
-            yield item
+        item = BodyItem()
+        item["body"] = response.xpath("//body").extract()
+        yield item
