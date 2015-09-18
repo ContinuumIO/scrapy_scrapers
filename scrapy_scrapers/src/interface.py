@@ -4,12 +4,12 @@ from scrapy.utils.project import get_project_settings
 
 
 class CrawlerInterface(object):
-    process = CrawlerProcess(get_project_settings())
 
     def __init__(self, crawler, start_urls, allowed_domains=[]):
         self.crawler = crawler
         self.start_urls = start_urls
         self.allowed_domains = allowed_domains
+        self.process = CrawlerProcess(get_project_settings())
 
     def start_crawl(self):
         self.process.crawl(
