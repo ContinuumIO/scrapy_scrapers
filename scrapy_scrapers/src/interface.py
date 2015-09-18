@@ -11,7 +11,7 @@ class CrawlerInterface(object):
         self.allowed_domains = allowed_domains
         self.process = CrawlerProcess(get_project_settings())
 
-    def start_crawl(self):
+    def start(self):
         self.process.crawl(
             self.crawler,
             allowed_domains=self.allowed_domains,

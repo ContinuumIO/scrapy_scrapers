@@ -3,6 +3,7 @@ resources/
 test_resources/
 source/memex/settings.py
 notes.md
+scratch.py
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
