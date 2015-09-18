@@ -1,6 +1,6 @@
 import scrapy
 
-from items import BodyItem
+from items import BodyItem, LinkItem
 
 
 class PageScraper(scrapy.Spider):
@@ -20,3 +20,14 @@ class PageScraper(scrapy.Spider):
         item = BodyItem()
         item["body"] = response.body
         yield item
+
+
+class LinkScraper(PageScraper):
+    name = "links"
+
+    def parse_as_item(self, response):
+        for selector in response.xpath("//a"):
+            item = LinkItem()
+            item["link"] = selector.xpath("@href").extract()
+            item["text"] = selector.xpath("text()").extract()
+            yield item
