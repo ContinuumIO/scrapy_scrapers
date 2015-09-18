@@ -1,6 +1,6 @@
 import scrapy
 
-from items import BodyItem, LinkItem
+from items import BodyItem, LinkItem, CustomItem
 
 
 class BaseScraper(scrapy.Spider):
@@ -22,6 +22,17 @@ class BaseScraper(scrapy.Spider):
         yield item
 
 
+class LinkScraper(BaseScraper):
+    name = "links"
+
+    def parse_as_item(self, response):
+        for selector in response.xpath("//a"):
+            item = LinkItem()
+            item["link"] = selector.xpath("@href").extract()
+            item["text"] = selector.xpath("text()").extract()
+            yield item
+
+
 class CustomScraper(BaseScraper):
     name = "custom"
 
@@ -30,16 +41,7 @@ class CustomScraper(BaseScraper):
         super(CustomScraper, self).__init__(*args, **kwargs)
 
     def parse_as_item(self, response):
-        for selector in response.xpath(parser_string):
-            yield selector.extract()
-
-
-class LinkScraper(PageScraper):
-    name = "links"
-
-    def parse_as_item(self, response):
-        for selector in response.xpath("//a"):
-            item = LinkItem()
-            item["link"] = selector.xpath("@href").extract()
-            item["text"] = selector.xpath("text()").extract()
+        for selector in response.xpath(self.parser_string):
+            item = CustomItem()
+            item["element"] = selector.extract()
             yield item
