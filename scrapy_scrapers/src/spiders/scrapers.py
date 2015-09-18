@@ -22,6 +22,18 @@ class BaseScraper(scrapy.Spider):
         yield item
 
 
+class CustomScraper(BaseScraper):
+    name = "custom"
+
+    def __init__(self, parser_string, *args, **kwargs):
+        self.parser_string = parser_string
+        super(CustomScraper, self).__init__(*args, **kwargs)
+
+    def parse_as_item(self, response):
+        for selector in response.xpath(parser_string):
+            yield selector.extract()
+
+
 class LinkScraper(PageScraper):
     name = "links"
 
