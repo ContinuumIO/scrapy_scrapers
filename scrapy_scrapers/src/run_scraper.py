@@ -5,9 +5,8 @@ from scrapy.crawler import CrawlerProcess
 from scrapy.utils.project import get_project_settings
 
 
-if __name__ == "__main__":
-    allowed_domains = [sys.argv[1]]
-    start_urls = [x for x in sys.argv[2:]]
+allowed_domains = [sys.argv[1]]
+start_urls = [x for x in sys.argv[2:]]
 
 
 process = CrawlerProcess(get_project_settings())
