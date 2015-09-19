@@ -1,4 +1,6 @@
 import scrapy
+from scrapy.crawler import CrawlerProcess
+from scrapy.utils.project import get_project_settings
 
 from items import BodyItem, LinkItem, CustomItem
 
@@ -20,6 +22,18 @@ class BaseScraper(scrapy.Spider):
         item = BodyItem()
         item["body"] = response.body
         yield item
+
+    def connect(self):
+        self.process = CrawlerProcess(get_project_settings())
+
+    def start(self):
+        self.connect()
+        self.process.crawl(
+            self.name,
+            start_urls = self.start_urls,
+            allowed_domains = self.allowed_domains,
+        )
+        self.process.start()
 
 
 class LinkScraper(BaseScraper):
@@ -45,3 +59,13 @@ class CustomScraper(BaseScraper):
             item = CustomItem()
             item["element"] = selector.extract()
             yield item
+
+    def start(self):
+        self.connect()
+        self.process.crawl(
+            self.name,
+            parser_string = self.parser_string,
+            start_urls = self.start_urls,
+            allowed_domains = self.allowed_domains,
+        )
+        self.process.start()
