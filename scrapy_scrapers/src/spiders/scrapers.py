@@ -2,8 +2,6 @@ import scrapy
 from scrapy.crawler import CrawlerProcess
 from scrapy.utils.project import get_project_settings
 
-from items import BodyItem, LinkItem, CustomItem
-
 
 class BaseScraper(scrapy.Spider):
     name = "base"
@@ -19,7 +17,7 @@ class BaseScraper(scrapy.Spider):
             yield scrapy.Request(url, callback=self.parse_as_item)
 
     def parse_as_item(self, response):
-        item = BodyItem()
+        item = {}
         item["body"] = response.body
         yield item
 
@@ -41,7 +39,7 @@ class LinkScraper(BaseScraper):
 
     def parse_as_item(self, response):
         for selector in response.xpath("//a"):
-            item = LinkItem()
+            item = {}
             item["link"] = selector.xpath("@href").extract()
             item["text"] = selector.xpath("text()").extract()
             yield item
@@ -56,7 +54,7 @@ class CustomScraper(BaseScraper):
 
     def parse_as_item(self, response):
         for selector in response.xpath(self.parser_string):
-            item = CustomItem()
+            item = {}
             item["element"] = selector.extract()
             yield item
 
