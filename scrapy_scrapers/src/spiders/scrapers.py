@@ -6,9 +6,10 @@ from scrapy.utils.project import get_project_settings
 class BaseScraper(scrapy.Spider):
     name = "base"
 
-    def __init__(self, allowed_domains=[], start_urls=[], *args, **kwargs):
+    def __init__(self, index, allowed_domains=[], start_urls=[], *args, **kwargs):
         self.allowed_domains = allowed_domains
         self.start_urls = start_urls
+        self.index = index
         super(BaseScraper, self).__init__(*args, **kwargs)
 
     # Find all links and follow them.
@@ -32,6 +33,7 @@ class BaseScraper(scrapy.Spider):
         self.connect()
         self.process.crawl(
             self.name,
+            self.index,
             start_urls = self.start_urls,
             allowed_domains = self.allowed_domains,
         )
@@ -72,9 +74,10 @@ class CustomScraper(BaseScraper):
         self.connect()
         self.process.crawl(
             self.name,
-            parser_string = self.parser_string,
-            parser_dict = self.parser_dict,
-            start_urls = self.start_urls,
-            allowed_domains = self.allowed_domains,
+            index=self.index,
+            parser_string=self.parser_string,
+            parser_dict=self.parser_dict,
+            start_urls=self.start_urls,
+            allowed_domains=self.allowed_domains,
         )
         self.process.start()

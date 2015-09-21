@@ -1,6 +1,6 @@
 import json
 
-from elasticsearch import Elasticsearch
+from elasticsearch import Elasticsearch, helpers
 
 
 class JsonWriterPipeline(object):
@@ -17,20 +17,17 @@ class JsonWriterPipeline(object):
 class ElasticsearchPipeline(object):
     batch_size = 500
 
-    def __init__(self):
-        self.es = Elasticsearch()
-        self.batch = []
-
     def open_spider(self, spider):
-        pass
-
-    def add_to_index(self, data):
-        pass
+        self.es_instance = Elasticsearch()
+        self.batch = []
+        self.index = spider.index
 
     def process_item(self, item, spider):
-        self.batch.append(item)
-        if len(self.batch) == self.batch_size:
-            print(self.batch)
+        self.batch.append({"_source": item, "_type": spider.name})
+        if len(self.batch) >= self.batch_size:
+            helpers.bulk(client=self.es_instance, actions=self.batch, index=self.index)
+            self.batch = []
 
     def close_spider(self, spider):
-        pass
+        if self.batch:
+            helpers.bulk(client=self.es_instance, actions=self.batch, index=self.index)
