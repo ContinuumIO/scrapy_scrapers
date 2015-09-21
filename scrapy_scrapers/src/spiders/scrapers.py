@@ -50,6 +50,10 @@ class LinkScraper(BaseScraper):
 
 
 class CustomScraper(BaseScraper):
+    """
+    Scraper for custom parser arguemnts. Currently only accepts xpath parser
+    arguments.
+    """
     name = "custom"
 
     def __init__(self, parser_string, parser_dict, *args, **kwargs):
