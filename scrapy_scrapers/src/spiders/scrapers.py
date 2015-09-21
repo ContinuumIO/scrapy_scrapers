@@ -11,19 +11,23 @@ class BaseScraper(scrapy.Spider):
         self.start_urls = start_urls
         super(BaseScraper, self).__init__(*args, **kwargs)
 
+    # Find all links and follow them.
     def parse(self, response):
         for href in response.xpath("//a/@href"):
             url = response.urljoin(href.extract())
-            yield scrapy.Request(url, callback=self.parse_as_item)
+            yield scrapy.Request(url, callback=self.parse_as_dict)
 
-    def parse_as_item(self, response):
+    def parse_as_dict(self, response):
         item = {}
         item["body"] = response.body
         yield item
 
+    # Instantiates a CrawlerProcess, which spins up a Twisted Reactor.
     def connect(self):
         self.process = CrawlerProcess(get_project_settings())
 
+    # Start the scraper. The crawl process must be instantiated with the same
+    # attributes as the instance.
     def start(self):
         self.connect()
         self.process.crawl(
@@ -37,7 +41,7 @@ class BaseScraper(scrapy.Spider):
 class LinkScraper(BaseScraper):
     name = "links"
 
-    def parse_as_item(self, response):
+    def parse_as_dict(self, response):
         for selector in response.xpath("//a"):
             item = {}
             item["link"] = selector.xpath("@href").extract()
@@ -48,14 +52,16 @@ class LinkScraper(BaseScraper):
 class CustomScraper(BaseScraper):
     name = "custom"
 
-    def __init__(self, parser_string, *args, **kwargs):
+    def __init__(self, parser_string, parser_dict, *args, **kwargs):
         self.parser_string = parser_string
+        self.parser_dict = parser_dict
         super(CustomScraper, self).__init__(*args, **kwargs)
 
-    def parse_as_item(self, response):
+    def parse_as_dict(self, response):
         for selector in response.xpath(self.parser_string):
             item = {}
-            item["element"] = selector.extract()
+            for key in self.parser_dict.keys():
+                item[key] = selector.xpath(self.parser_dict[key]).extract()
             yield item
 
     def start(self):
@@ -63,6 +69,7 @@ class CustomScraper(BaseScraper):
         self.process.crawl(
             self.name,
             parser_string = self.parser_string,
+            parser_dict = self.parser_dict,
             start_urls = self.start_urls,
             allowed_domains = self.allowed_domains,
         )
