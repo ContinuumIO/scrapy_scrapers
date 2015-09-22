@@ -11,16 +11,12 @@ class ElasticsearchTest(unittest.TestCase):
         pass
 
     def test_elasticsearch_up(self):
-        self.assertTrue(self.es.ping())
+        assert self.es.ping()
 
     def test_create_index(self):
-        index = self.es.indices.create(index="potato")
-        self.assertEqual(index, {u'acknowledged': True})
+        index = self.es.indices.create(index="test_index")
+        assert index == {u'acknowledged': True}
 
     def test_delete_index(self):
-        index = self.es.indices.delete(index="potato")
-        self.assertEqual(index, {u'acknowledged': True})
-
-
-if __name__ == '__main__':
-    unittest.main()
+        index = self.es.indices.delete(index="test_index")
+        assert index == {u'acknowledged': True}
