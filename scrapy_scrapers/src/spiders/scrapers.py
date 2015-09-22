@@ -1,24 +1,23 @@
 import scrapy
+from scrapy.spiders import CrawlSpider, Rule
 from scrapy.crawler import CrawlerProcess
+from scrapy.linkextractors import LinkExtractor
 from scrapy.utils.project import get_project_settings
 
 
-class BaseScraper(scrapy.Spider):
+class BaseScraper(CrawlSpider):
     name = "base"
+    rules = (
+        Rule(LinkExtractor(allow=()), callback='parse_item'),
+    )
 
-    def __init__(self, index, allowed_domains=[], start_urls=[], *args, **kwargs):
+    def __init__(self, index, start_urls, allowed_domains=[], *args, **kwargs):
         self.allowed_domains = allowed_domains
         self.start_urls = start_urls
         self.index = index
         super(BaseScraper, self).__init__(*args, **kwargs)
 
-    # Find all links and follow them.
-    def parse(self, response):
-        for href in response.xpath("//a/@href"):
-            url = response.urljoin(href.extract())
-            yield scrapy.Request(url, callback=self.parse_as_dict)
-
-    def parse_as_dict(self, response):
+    def parse_item(self, response):
         item = {}
         item["body"] = response.body
         yield item
@@ -43,7 +42,7 @@ class BaseScraper(scrapy.Spider):
 class LinkScraper(BaseScraper):
     name = "links"
 
-    def parse_as_dict(self, response):
+    def parse_item(self, response):
         for selector in response.xpath("//a"):
             item = {}
             item["link"] = selector.xpath("@href").extract()
@@ -63,7 +62,7 @@ class CustomScraper(BaseScraper):
         self.parser_dict = parser_dict
         super(CustomScraper, self).__init__(*args, **kwargs)
 
-    def parse_as_dict(self, response):
+    def parse_item(self, response):
         for selector in response.xpath(self.parser_string):
             item = {}
             for key in self.parser_dict.keys():
