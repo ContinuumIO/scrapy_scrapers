@@ -21,8 +21,9 @@ class ElasticsearchPipeline(object):
         self.es_instance = Elasticsearch()
         self.batch = []
         self.index = spider.index
-        if es.indices.exists(index=self.index):
-            es.indices.delete(self.index)
+        if self.es_instance.indices.exists(index=self.index):
+            self.es_instance.indices.delete(self.index)
+        self.es_instance.indices.create(self.index)
 
     def process_item(self, item, spider):
         self.batch.append({"_source": item, "_type": spider.name})
