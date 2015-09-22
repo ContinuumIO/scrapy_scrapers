@@ -15,12 +15,14 @@ class JsonWriterPipeline(object):
 
 
 class ElasticsearchPipeline(object):
-    batch_size = 500
+    batch_size = 1000
 
     def open_spider(self, spider):
         self.es_instance = Elasticsearch()
         self.batch = []
         self.index = spider.index
+        if es.indices.exists(index=self.index):
+            es.indices.delete(self.index)
 
     def process_item(self, item, spider):
         self.batch.append({"_source": item, "_type": spider.name})
