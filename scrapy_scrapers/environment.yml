@@ -4,6 +4,7 @@ channels:
 dependencies:
     - python=2.7.8
     - scrapy
+    - kibana
     - pip
     - elasticsearch
     - elasticsearch-py
