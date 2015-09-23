@@ -7,9 +7,6 @@ class ElasticsearchTest(unittest.TestCase):
     def setUp(self):
         self.es = Elasticsearch()
 
-    def tearDown(self):
-        pass
-
     def test_elasticsearch_up(self):
         assert self.es.ping()
 
