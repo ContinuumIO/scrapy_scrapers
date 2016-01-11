@@ -8,3 +8,5 @@ dependencies:
     - pip
     - elasticsearch
     - elasticsearch-py
+    - openssl
+    - requests
